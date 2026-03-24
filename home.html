@@ -21,7 +21,30 @@
       padding: 20px;
       border-right: 1px solid #eee;
     }
+.wallet-container {
+  position: relative;
+}
 
+.dropdown {
+  position: absolute;
+  right: 0;
+  margin-top: 10px;
+  background: white;
+  color: black;
+  border-radius: 10px;
+  display: none;
+  min-width: 180px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.dropdown div {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.dropdown div:hover {
+  background: #f5f5f5;
+}
     .logo {
       font-size: 20px;
       font-weight: bold;
@@ -119,11 +142,22 @@
   <div class="main">
 
     <!-- TOP BAR -->
-    <div class="topbar">
-      <input class="search" placeholder="🔍 Tìm kiếm..." />
+   <div class="topbar">
 
-      <div class="wallet" id="walletBox"></div>
+  <input class="search" placeholder="🔍 Tìm kiếm..." />
+
+  <div class="wallet-container">
+    <div class="wallet" id="walletBox" onclick="toggleMenu()"></div>
+
+    <div class="dropdown" id="dropdownMenu">
+      <div onclick="openProfile()">👤 Profile</div>
+      <div onclick="openBadges()">🏆 Badges</div>
+      <div onclick="openNFTs()">🎖 NFTs</div>
+      <div onclick="logout()">🚪 Đăng xuất</div>
     </div>
+  </div>
+
+</div>
 
     <!-- CONTENT -->
     <div class="content">
@@ -133,20 +167,50 @@
 
   </div>
 
-  <script>
-    // HIỂN THỊ WALLET
-    const wallet = localStorage.getItem("wallet");
+ <script>
+let walletAddress = "";
 
-    if (wallet) {
-      const short =
-        wallet.slice(0,6) + "..." + wallet.slice(-4);
+// LOAD WALLET
+const wallet = localStorage.getItem("wallet");
 
-      document.getElementById("walletBox").innerText = "👛 " + short;
-    } else {
-      // chưa login thì quay về
-      window.location.href = "index.html";
-    }
-  </script>
+if (wallet) {
+  walletAddress = wallet;
+
+  const short =
+    wallet.slice(0,6) + "..." + wallet.slice(-4);
+
+  document.getElementById("walletBox").innerText = "👛 " + short;
+} else {
+  window.location.href = "index.html";
+}
+
+// MENU
+function toggleMenu() {
+  const menu = document.getElementById("dropdownMenu");
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+// LOGOUT
+function logout() {
+  localStorage.removeItem("wallet");
+  window.location.href = "index.html";
+}
+
+// PROFILE
+function openProfile() {
+  alert("👤 Wallet: " + walletAddress);
+}
+
+// BADGES
+function openBadges() {
+  alert("🏆 Chưa có badges");
+}
+
+// NFT
+function openNFTs() {
+  alert("🎖 Chưa có NFT");
+}
+</script>
 
 </body>
 </html>
