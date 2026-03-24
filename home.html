@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>HackChem - Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      background: #f5f5f5;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 250px;
+      background: #fff;
+      height: 100vh;
+      padding: 20px;
+      border-right: 1px solid #eee;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .menu {
+      margin-top: 20px;
+    }
+
+    .menu-item {
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 5px;
+    }
+
+    .menu-item:hover {
+      background: #f0f0f0;
+    }
+
+    .menu-title {
+      font-size: 12px;
+      color: #888;
+      margin-top: 15px;
+      margin-bottom: 5px;
+    }
+
+    .sub-item {
+      padding: 8px 20px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .sub-item:hover {
+      background: #f5f5f5;
+      border-radius: 6px;
+    }
+
+    /* MAIN */
+    .main {
+      flex: 1;
+      padding: 20px;
+    }
+
+    /* TOP BAR */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .search {
+      padding: 10px;
+      width: 300px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    .wallet {
+      background: #111;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+
+    /* CONTENT */
+    .content {
+      margin-top: 40px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="logo">HACKCHEM</div>
+
+    <div class="menu">
+      <div class="menu-item">🏠 Trang chủ</div>
+
+      <div class="menu-title">HỌC</div>
+      <div class="sub-item">📊 Tiến độ học tập</div>
+      <div class="sub-item">📚 Khám phá khóa học</div>
+
+      <div class="menu-title">DỰ ÁN</div>
+      <div class="sub-item">🧪 Dự án của tôi</div>
+      <div class="sub-item">🚀 Khám phá dự án</div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <input class="search" placeholder="🔍 Tìm kiếm..." />
+
+      <div class="wallet" id="walletBox"></div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+      <h2>👋 Chào mừng đến HackChem</h2>
+      <p>Bắt đầu học và khám phá các khóa học ngay!</p>
+    </div>
+
+  </div>
+
+  <script>
+    // HIỂN THỊ WALLET
+    const wallet = localStorage.getItem("wallet");
+
+    if (wallet) {
+      const short =
+        wallet.slice(0,6) + "..." + wallet.slice(-4);
+
+      document.getElementById("walletBox").innerText = "👛 " + short;
+    } else {
+      // chưa login thì quay về
+      window.location.href = "index.html";
+    }
+  </script>
+
+</body>
+</html>
