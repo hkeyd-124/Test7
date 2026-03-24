@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>HackChem</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: white;
+      height: 100vh;
+    }
+
+    .center-box {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .logo {
+      font-size: 48px;
+      font-weight: bold;
+      margin-bottom: 30px;
+    }
+
+    .btn {
+      padding: 14px 28px;
+      font-size: 16px;
+      border: none;
+      border-radius: 12px;
+      background: #facc15;
+      color: #111;
+      cursor: pointer;
+    }
+
+    .wallet-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+    }
+
+    .wallet-box {
+      background: #1e293b;
+      padding: 10px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: none;
+    }
+
+    .dropdown {
+      margin-top: 10px;
+      background: #1e293b;
+      border-radius: 12px;
+      overflow: hidden;
+      display: none;
+      min-width: 180px;
+    }
+
+    .dropdown div {
+      padding: 10px;
+      cursor: pointer;
+      border-bottom: 1px solid #334155;
+    }
+
+    .dropdown div:hover {
+      background: #334155;
+    }
+
+    .modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 16px;
+      display: none;
+      width: 320px;
+    }
+
+    .close {
+      float: right;
+      cursor: pointer;
+      color: red;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- WALLET -->
+  <div class="wallet-container">
+    <div class="wallet-box" id="walletBox" onclick="toggleMenu()"></div>
+
+    <div class="dropdown" id="dropdownMenu">
+      <div onclick="openProfile()">👤 Profile</div>
+      <div onclick="openBadges()">🏆 Badges</div>
+      <div onclick="openNFTs()">🎖 NFTs</div>
+      <div onclick="logout()">🚪 Đăng xuất</div>
+    </div>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="center-box" id="loginBox">
+    <div class="logo">HackChem</div>
+    <button class="btn" onclick="connectWallet()">🚀 Tham gia ngay</button>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal" id="modal">
+    <span class="close" onclick="closeModal()">✖</span>
+    <div id="modalContent"></div>
+  </div>
+
+  <!-- 🔥 FIREBASE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCO3BvrQ0GAmIebCwueVd88Do1YGk_iYJo",
+      authDomain: "hackchem-90922.firebaseapp.com",
+      projectId: "hackchem-90922",
+      storageBucket: "hackchem-90922.firebasestorage.app",
+      messagingSenderId: "86265015549",
+      appId: "1:86265015549:web:b7981ab509a1e06363a294"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function saveUser(wallet) {
+      await setDoc(doc(db, "users", wallet), {
+        wallet: wallet,
+        progress: 0,
+        createdAt: new Date().toISOString()
+      });
+    }
+
+    // expose ra ngoài
+    window.saveUser = saveUser;
+  </script>
+
+  <!-- MAIN SCRIPT -->
+  <script>
+    let walletAddress = "";
+
+    async function connectWallet() {
+      if (!window.ethereum) {
+        alert("Bạn chưa cài MetaMask!");
+        return;
+      }
+
+      try {
+        const accounts = await window.ethereum.request({
+          method: "eth_requestAccounts",
+        });
+
+        walletAddress = accounts[0];
+
+        // 🔥 LƯU FIREBASE
+        if (window.saveUser) {
+          await window.saveUser(walletAddress);
+        }
+
+        // SIGN
+        const message = "Đăng nhập vào HackChem";
+        await window.ethereum.request({
+          method: "personal_sign",
+          params: [message, walletAddress],
+        });
+
+        localStorage.setItem("wallet", walletAddress);
+
+        showWalletUI();
+
+      } catch (err) {
+        console.log(err);
+        alert("Bạn đã từ chối hoặc có lỗi xảy ra");
+      }
+    }
+
+    function showWalletUI() {
+      const wallet = localStorage.getItem("wallet");
+      if (!wallet) return;
+
+      walletAddress = wallet;
+
+      const shortWallet =
+        wallet.slice(0,6) + "..." + wallet.slice(-4);
+
+      const walletBox = document.getElementById("walletBox");
+      walletBox.style.display = "block";
+      walletBox.innerText = "👛 " + shortWallet;
+
+      document.getElementById("loginBox").style.display = "none";
+    }
+
+    function logout() {
+      localStorage.removeItem("wallet");
+
+      walletAddress = "";
+
+      document.getElementById("walletBox").style.display = "none";
+      document.getElementById("dropdownMenu").style.display = "none";
+      document.getElementById("loginBox").style.display = "flex";
+    }
+
+    function toggleMenu() {
+      const menu = document.getElementById("dropdownMenu");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    function showModal(content) {
+      document.getElementById("modalContent").innerHTML = content;
+      document.getElementById("modal").style.display = "block";
+    }
+
+    function closeModal() {
+      document.getElementById("modal").style.display = "none";
+    }
+
+    function openProfile() {
+      showModal(`
+        <h3>👤 Profile</h3>
+        <p>${walletAddress}</p>
+      `);
+    }
+
+    function openBadges() {
+      showModal(`
+        <h3>🏆 Badges</h3>
+        <p>• Atomic Beginner</p>
+      `);
+    }
+
+    function openNFTs() {
+      showModal(`
+        <h3>🎖 NFTs</h3>
+        <p>• Chưa có NFT</p>
+      `);
+    }
+
+    window.onload = () => {
+      showWalletUI();
+    };
+  </script>
+
+</body>
+</html>
